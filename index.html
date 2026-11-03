@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4ee">
+  <meta name="description" content="Một trò đùa âm thanh vui nhộn, chỉ phát khi bạn bấm nút.">
+  <title>Một tiếng troll nho nhỏ</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #22232b;
+      --muted: #696a73;
+      --paper: #f7f4ee;
+      --coral: #ff705c;
+      --purple: #7461da;
+      --lime: #d8f36a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 8% 14%, rgba(255, 112, 92, .17), transparent 31%),
+        radial-gradient(ellipse at 92% 84%, rgba(116, 97, 218, .15), transparent 32%),
+        var(--paper);
+      font-family: ui-rounded, "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    }
+    .card {
+      position: relative;
+      width: min(100%, 620px);
+      overflow: hidden;
+      padding: clamp(28px, 7vw, 54px);
+      border: 1px solid rgba(34, 35, 43, .09);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, .84);
+      box-shadow: 0 24px 80px rgba(40, 34, 68, .12);
+    }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: clamp(34px, 7vw, 54px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--purple);
+      transform: rotate(-8deg);
+      font-size: 1.1rem;
+    }
+    .duration {
+      padding: 8px 12px;
+      border: 1px solid rgba(34, 35, 43, .12);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--purple);
+      font-size: .78rem;
+      font-weight: 850;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 500px;
+      margin: 0;
+      font-size: clamp(2.35rem, 9vw, 4.35rem);
+      line-height: .98;
+      letter-spacing: -.065em;
+    }
+    h1 span { color: var(--coral); white-space: nowrap; }
+    .intro {
+      max-width: 440px;
+      margin: 22px 0 28px;
+      color: var(--muted);
+      font-size: clamp(1rem, 3vw, 1.12rem);
+      line-height: 1.65;
+    }
+    .sound-art {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      height: 76px;
+      margin: 0 0 28px;
+      padding: 15px;
+      border-radius: 18px;
+      background: #f2efff;
+    }
+    .sound-art span {
+      width: 8px;
+      height: var(--h);
+      border-radius: 99px;
+      background: var(--purple);
+      opacity: .8;
+    }
+    .sound-art span:nth-child(3n) { background: var(--coral); }
+    .sound-art span:nth-child(2n) { opacity: .48; }
+    .sound-art.is-playing span {
+      animation: bounce .42s ease-in-out infinite alternate;
+      animation-delay: calc(var(--i) * -45ms);
+      transform-origin: center;
+    }
+    @keyframes bounce {
+      to { transform: scaleY(.35); opacity: .55; }
+    }
+    .play-button, .stop-button {
+      min-height: 54px;
+      border: 0;
+      border-radius: 16px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .play-button {
+      width: 100%;
+      padding: 15px 20px;
+      color: var(--ink);
+      background: var(--lime);
+      box-shadow: 0 5px 0 #bdd84c;
+      font-size: 1rem;
+    }
+    .play-button:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #bdd84c; }
+    .play-button:active { transform: translateY(2px); box-shadow: 0 2px 0 #bdd84c; }
+    .play-button:disabled { cursor: wait; opacity: .8; }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .volume-control {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--purple);
+      cursor: pointer;
+    }
+    .volume-value {
+      min-width: 34px;
+      color: var(--ink);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .stop-button {
+      padding: 0 16px;
+      color: #fff;
+      background: var(--ink);
+      font-size: .84rem;
+    }
+    .stop-button:hover { background: #3b3b46; }
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid var(--purple);
+      outline-offset: 4px;
+    }
+    .notice {
+      display: flex;
+      gap: 10px;
+      margin: 22px 0 0;
+      padding: 14px 15px;
+      border-radius: 14px;
+      color: #585964;
+      background: #f6f5f2;
+      font-size: .8rem;
+      line-height: 1.55;
+    }
+    .notice strong { color: var(--ink); }
+    .status {
+      min-height: 1.4em;
+      margin: 15px 0 0;
+      color: var(--purple);
+      font-size: .85rem;
+      font-weight: 700;
+    }
+    .footer {
+      margin: 26px 0 0;
+      color: #888891;
+      font-size: .76rem;
+      text-align: center;
+    }
+    @media (max-width: 440px) {
+      body { padding: 14px; }
+      .card { padding: 25px 21px; border-radius: 24px; }
+      .controls { grid-template-columns: 1fr; }
+      .stop-button { width: 100%; }
+      .sound-art { gap: 5px; }
+      .sound-art span { width: 6px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="topline">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span> GÓC TROLL NHẸ</div>
+      <span class="duration">Âm thanh ~3 giây</span>
+    </div>
+    <p class="eyebrow">Bạn có một món quà âm thanh</p>
+    <h1>Một tiếng cười <span>nho nhỏ.</span></h1>
+    <p class="intro">Một giai điệu ngắn, hơi ngớ ngẩn và hoàn toàn tự chế. Chỉ phát khi bạn bấm nút — sẵn sàng chưa?</p>
+    <div class="sound-art" id="soundArt" aria-hidden="true">
+      <span style="--h:18px;--i:0"></span><span style="--h:29px;--i:1"></span>
+      <span style="--h:42px;--i:2"></span><span style="--h:24px;--i:3"></span>
+      <span style="--h:35px;--i:4"></span><span style="--h:48px;--i:5"></span>
+      <span style="--h:27px;--i:6"></span><span style="--h:38px;--i:7"></span>
+      <span style="--h:20px;--i:8"></span><span style="--h:45px;--i:9"></span>
+      <span style="--h:30px;--i:10"></span><span style="--h:17px;--i:11"></span>
+      <span style="--h:39px;--i:12"></span><span style="--h:23px;--i:13"></span>
+      <span style="--h:47px;--i:14"></span><span style="--h:28px;--i:15"></span>
+      <span style="--h:36px;--i:16"></span><span style="--h:19px;--i:17"></span>
+      <span style="--h:43px;--i:18"></span><span style="--h:25px;--i:19"></span>
+      <span style="--h:34px;--i:20"></span><span style="--h:16px;--i:21"></span>
+      <span style="--h:40px;--i:22"></span><span style="--h:22px;--i:23"></span>
+      <span style="--h:31px;--i:24"></span>
+    </div>
+    <button class="play-button" id="playButton" type="button">▶ &nbsp; Phát tiếng troll</button>
+    <div class="controls">
+      <label class="volume-control" for="volume">
+        <span>Âm lượng trang</span>
+        <input id="volume" type="range" min="0" max="0.45" step="0.01" value="0.22" aria-label="Âm lượng của tiếng troll">
+        <span class="volume-value" id="volumeValue">22%</span>
+      </label>
+      <button class="stop-button" id="stopButton" type="button">■ &nbsp; Dừng / tắt tiếng</button>
+    </div>
+    <div class="notice" role="note">
+      <span aria-hidden="true">🔊</span>
+      <span>Bắt đầu ở mức vừa phải. Điều khiển này chỉ chỉnh âm thanh của trang, <strong>không đổi âm lượng hệ thống</strong> trên điện thoại.</span>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite">Âm thanh đang tắt. Bạn có toàn quyền bấm phát hoặc dừng.</p>
+    <p class="footer">Gửi cho một người bạn có khiếu hài hước ✦</p>
+  </main>
+  <script>
+    (() => {
+      const playButton = document.getElementById("playButton");
+      const stopButton = document.getElementById("stopButton");
+      const volume = document.getElementById("volume");
+      const volumeValue = document.getElementById("volumeValue");
+      const status = document.getElementById("status");
+      const soundArt = document.getElementById("soundArt");
+      let audioContext = null;
+      let masterGain = null;
+      let oscillators = [];
+      let endTimer = null;
+      let isPlaying = false;
+
+      function setPlaying(playing) {
+        isPlaying = playing;
+        playButton.disabled = playing;
+        playButton.textContent = playing ? "♫   Đang phát tiếng troll…" : "▶   Phát tiếng troll";
+        soundArt.classList.toggle("is-playing", playing);
+      }
+
+      function makeTone(ctx, startAt, duration, startHz, endHz, shape, loudness, filterHz) {
+        const osc = ctx.createOscillator();
+        const envelope = ctx.createGain();
+        if (filterHz) {
+          const filter = ctx.createBiquadFilter();
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(filterHz, startAt);
+          osc.connect(filter);
+          filter.connect(envelope);
+        } else {
+          osc.connect(envelope);
+        }
+        osc.type = shape;
+        osc.frequency.setValueAtTime(Math.max(1, startHz), startAt);
+        if (endHz !== startHz) {
+          osc.frequency.exponentialRampToValueAtTime(Math.max(1, endHz), startAt + duration);
+        }
+        envelope.gain.setValueAtTime(0.0001, startAt);
+        envelope.gain.linearRampToValueAtTime(loudness, startAt + Math.min(0.035, duration / 4));
+        envelope.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        envelope.connect(masterGain);
+        osc.start(startAt);
+        osc.stop(startAt + duration + 0.02);
+        oscillators.push(osc);
+      }
+
+      async function startSound() {
+        if (isPlaying) return;
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) {
+          status.textContent = "Trình duyệt này chưa hỗ trợ phát âm thanh. Hãy thử mở bằng trình duyệt mới hơn.";
+          return;
+        }
+        try {
+          audioContext = new AudioContextClass();
+          await audioContext.resume();
+          const ctx = audioContext;
+          const now = ctx.currentTime;
+          masterGain = ctx.createGain();
+          masterGain.gain.setValueAtTime(Number(volume.value), now);
+          masterGain.connect(ctx.destination);
+          oscillators = [];
+          // Ba nốt chào vui, một tiếng trượt xuống hài hước, rồi hai tiếng "bloop".
+          makeTone(ctx, now + 0.02, 0.20, 523, 523, "triangle", 0.33);
+          makeTone(ctx, now + 0.17, 0.20, 659, 659, "triangle", 0.33);
+          makeTone(ctx, now + 0.32, 0.27, 784, 784, "triangle", 0.33);
+          makeTone(ctx, now + 0.76, 0.86, 440, 130, "sawtooth", 0.18, 900);
+          makeTone(ctx, now + 1.83, 0.36, 330, 180, "triangle", 0.30);
+          makeTone(ctx, now + 2.36, 0.23, 440, 240, "sine", 0.32);
+          makeTone(ctx, now + 2.63, 0.24, 560, 310, "sine", 0.32);
+          setPlaying(true);
+          status.textContent = "Đang phát — muốn dừng thì bấm nút màu tối bên dưới.";
+          endTimer = window.setTimeout(async () => {
+            if (audioContext !== ctx) return;
+            setPlaying(false);
+            status.textContent = "Xong rồi! Muốn nghe lại thì bấm phát lần nữa.";
+            oscillators = [];
+            masterGain = null;
+            audioContext = null;
+            await ctx.close().catch(() => {});
+          }, 3100);
+        } catch {
+          setPlaying(false);
+          status.textContent = "Không thể phát âm thanh lúc này. Hãy thử bấm phát lại.";
+          if (audioContext) {
+            await audioContext.close().catch(() => {});
+            audioContext = null;
+          }
+        }
+      }
+
+      async function stopSound() {
+        if (!isPlaying || !audioContext) {
+          status.textContent = "Âm thanh đang tắt — mọi thứ vẫn trong tầm kiểm soát.";
+          return;
+        }
+        const ctx = audioContext;
+        window.clearTimeout(endTimer);
+        isPlaying = false;
+        setPlaying(false);
+        status.textContent = "Đã dừng và tắt tiếng.";
+        if (masterGain) {
+          masterGain.gain.cancelScheduledValues(ctx.currentTime);
+          masterGain.gain.setTargetAtTime(0, ctx.currentTime, 0.015);
+        }
+        for (const osc of oscillators) {
+          try { osc.stop(ctx.currentTime + 0.06); } catch {}
+        }
+        oscillators = [];
+        masterGain = null;
+        audioContext = null;
+        window.setTimeout(() => ctx.close().catch(() => {}), 100);
+      }
+
+      volume.addEventListener("input", () => {
+        const value = Number(volume.value);
+        volumeValue.textContent = Math.round(value * 100) + "%";
+        if (masterGain && audioContext) {
+          masterGain.gain.setTargetAtTime(value, audioContext.currentTime, 0.025);
+        }
+      });
+      playButton.addEventListener("click", startSound);
+      stopButton.addEventListener("click", stopSound);
+    })();
+  </script>
+</body>
+</html>
